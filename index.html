@@ -12,8 +12,8 @@
             --accent-yellow: #F3A358;
             --text-dark: #2C3E50;
             --alert-red: #EF4444;
-            --tag-bg-light: #F4F7F4; /* 统一的浅色背景 */
-            --tag-bg-alert: #FFEDED; /* Fiona 特有的浅红背景 */
+            --tag-bg-light: #F4F7F4;
+            --tag-bg-alert: #FFEDED;
         }
 
         body {
@@ -22,6 +22,7 @@
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; color: var(--text-dark);
+            overflow-x: hidden; /* 核心：禁止横向溢出 */
         }
 
         .prototype-banner {
@@ -33,7 +34,8 @@
 
         .main-wrapper {
             flex: 1; display: flex; justify-content: center; align-items: center;
-            width: 100%; padding: 40px 20px 120px;
+            width: 100%; box-sizing: border-box;
+            padding: 40px 20px 120px;
         }
 
         .container {
@@ -42,11 +44,11 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
             display: grid; grid-template-columns: 1fr 1.2fr; gap: 45px;
             border: 1px solid #EEE;
+            box-sizing: border-box;
         }
 
         h2 { font-weight: 700; font-size: 2.2rem; color: var(--primary-green); margin: 0; }
         
-        /* ✨ 核心改动：统一采用 .tech-tag-small 的视觉逻辑 ✨ */
         .status-badge-large {
             display: inline-block;
             font-family: 'Roboto Mono', monospace;
@@ -59,19 +61,9 @@
             transition: all 0.3s ease;
         }
 
-        /* Fiona 状态：浅红背景 + 红字 */
-        .badge-style-fiona {
-            background: var(--tag-bg-alert);
-            color: var(--alert-red);
-        }
+        .badge-style-fiona { background: var(--tag-bg-alert); color: var(--alert-red); }
+        .badge-style-masters { background: var(--tag-bg-light); color: var(--primary-green); }
 
-        /* Masters 状态：浅绿背景 + 绿字 (完全等同于 tech-tag-small) */
-        .badge-style-masters {
-            background: var(--tag-bg-light);
-            color: var(--primary-green);
-        }
-
-        /* 辅助小标签 (保持原样) */
         .tech-tag-small {
             display: inline-block;
             font-family: 'Roboto Mono', monospace;
@@ -108,12 +100,12 @@
             cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em;
             margin-top: 20px; transition: 0.3s; text-align: center;
         }
-        .action-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
         .display-section {
             background: #FCFFFC; border: 2px dashed var(--primary-green);
             border-radius: 24px; padding: 30px; height: 480px;
             overflow-y: auto; display: flex; flex-direction: column;
+            box-sizing: border-box;
         }
 
         .hospital-card {
@@ -124,6 +116,7 @@
         }
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } }
         .h-name { font-weight: 700; color: var(--text-dark); font-size: 1.1rem; margin-bottom: 4px; }
+        .h-info { font-size: 0.85rem; color: #666; }
 
         .ranking-container {
             display: flex; flex-direction: column; align-items: center;
@@ -139,12 +132,24 @@
         }
         .nav-bar button {
             flex: 1; padding: 16px; border-radius: 35px; border: 1px solid #EEE;
-            background: #FFFFFF; font-weight: 700; font-size: 0.8rem;
+            background: #FFFFFF; font-weight: 700; font-size: 0.7rem;
             cursor: pointer; transition: 0.3s; text-transform: uppercase;
         }
         .nav-bar button.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
 
-        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        /* 手机端画幅锁定适配 */
+        @media (max-width: 900px) {
+            .container { 
+                grid-template-columns: 1fr; 
+                padding: 25px; 
+                gap: 30px;
+            }
+            .main-wrapper { padding-bottom: 140px; }
+            .display-section { height: 350px; }
+            .hero-name { font-size: 2rem; }
+            h2 { font-size: 1.8rem; }
+            .status-badge-large { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
@@ -177,8 +182,8 @@
     </div>
 
     <div class="nav-bar">
-        <button id="alertBtn" class="active" onclick="renderView('low')">🆘 ALERT: FIONA</button>
-        <button id="reportBtn" onclick="reportAction()">🏆 CHAMPIONS: TEAM</button>
+        <button id="alertBtn" class="active" onclick="renderView('low')">ALERT: FIONA</button>
+        <button id="reportBtn" onclick="reportAction()">CHAMPIONS: TEAM</button>
     </div>
 
     <script>
@@ -244,9 +249,9 @@
         function requestLocation() {
             if (confirm("Confirm: Bridge FIONA to professional medical resources?")) {
                 const out = document.getElementById('insightOutput');
-                out.innerHTML = `<p style="font-weight: 700; color: var(--alert-red); margin-bottom: 20px; font-family:'Roboto Mono';">> BRIDGE_ESTABLISHED: KOWLOON_TONG</p>`;
+                out.innerHTML = `<p style="font-weight: 700; color: var(--alert-red); margin-bottom: 20px; font-family:'Roboto Mono';">BRIDGE_ESTABLISHED: KOWLOON_TONG</p>`;
                 hospitalData.forEach(h => {
-                    out.innerHTML += `<div class="hospital-card"><div class="h-name">${h.name}</div><div class="h-info">📍 ${h.addr}</div><div class="h-info">📞 ${h.tel}</div></div>`;
+                    out.innerHTML += `<div class="hospital-card"><div class="h-name">${h.name}</div><div class="h-info">ADDR: ${h.addr}</div><div class="h-info">TEL: ${h.tel}</div></div>`;
                 });
                 out.scrollTop = 0;
             }
