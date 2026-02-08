@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Moodie - Team Insight Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #F9F9F4;
+            --primary-green: #A7C9A7;
+            --accent-yellow: #F3A358;
+            --text-dark: #2C3E50;
+            --alert-red: #EF4444;
+            --tag-bg-light: #F4F7F4; /* 统一的浅色背景 */
+            --tag-bg-alert: #FFEDED; /* Fiona 特有的浅红背景 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; color: var(--text-dark);
+        }
+
+        .prototype-banner {
+            width: 100%; background: var(--text-dark); color: #FFFFFF;
+            padding: 14px 0; text-align: center;
+            font-family: 'Roboto Mono', monospace; font-size: 0.75rem;
+            letter-spacing: 0.12em; text-transform: uppercase;
+        }
+
+        .main-wrapper {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            width: 100%; padding: 40px 20px 120px;
+        }
+
+        .container {
+            width: 100%; max-width: 1100px; background: #FFFFFF;
+            padding: 45px; border-radius: 32px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 45px;
+            border: 1px solid #EEE;
+        }
+
+        h2 { font-weight: 700; font-size: 2.2rem; color: var(--primary-green); margin: 0; }
+        
+        /* ✨ 核心改动：统一采用 .tech-tag-small 的视觉逻辑 ✨ */
+        .status-badge-large {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.3rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin: 25px 0 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        /* Fiona 状态：浅红背景 + 红字 */
+        .badge-style-fiona {
+            background: var(--tag-bg-alert);
+            color: var(--alert-red);
+        }
+
+        /* Masters 状态：浅绿背景 + 绿字 (完全等同于 tech-tag-small) */
+        .badge-style-masters {
+            background: var(--tag-bg-light);
+            color: var(--primary-green);
+        }
+
+        /* 辅助小标签 (保持原样) */
+        .tech-tag-small {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--tag-bg-light);
+            color: var(--primary-green);
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin: 5px 0 15px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 8px; background: #FAFAFA; padding: 20px;
+            border-radius: 18px; border: 1px solid #F0F0F0;
+        }
+
+        .day-cell {
+            aspect-ratio: 1; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-family: 'Roboto Mono', monospace;
+            font-weight: 700; color: white;
+        }
+
+        .mood-low { background: var(--alert-red); opacity: 0.9; }
+        .mood-high { background: var(--primary-green); }
+        .day-empty { border: 1px dashed #DDD; color: #BBB; }
+
+        .action-btn {
+            width: 100%; padding: 16px; background: var(--accent-yellow);
+            color: white; border: none; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-weight: 700;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em;
+            margin-top: 20px; transition: 0.3s; text-align: center;
+        }
+        .action-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .display-section {
+            background: #FCFFFC; border: 2px dashed var(--primary-green);
+            border-radius: 24px; padding: 30px; height: 480px;
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+
+        .hospital-card {
+            background: white; padding: 18px; border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px;
+            border-left: 6px solid var(--alert-red); text-align: left;
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } }
+        .h-name { font-weight: 700; color: var(--text-dark); font-size: 1.1rem; margin-bottom: 4px; }
+
+        .ranking-container {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 12px; margin: auto 0;
+        }
+        .rank-item { display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center; }
+        .rank-number { font-family: 'Roboto Mono'; font-weight: 700; color: var(--accent-yellow); font-size: 1.1rem; border-bottom: 2px solid var(--accent-yellow); }
+        .hero-name { font-size: 2.8rem; font-weight: 800; color: var(--primary-green); line-height: 1; letter-spacing: -1.5px; }
+
+        .nav-bar {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 15px; width: 90%; max-width: 550px;
+        }
+        .nav-bar button {
+            flex: 1; padding: 16px; border-radius: 35px; border: 1px solid #EEE;
+            background: #FFFFFF; font-weight: 700; font-size: 0.8rem;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .nav-bar button.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
+
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="prototype-banner">
+        <span>Software Prototype:</span> Built for <span>Fiona, Cherry, Rain & Teresa</span>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="input-section">
+                <h2 id="pageTitle">Health Alert</h2>
+                
+                <div id="statusBadge" class="status-badge-large badge-style-fiona">CASE: FIONA</div>
+                
+                <br>
+                <div class="tech-tag-small" id="techTag">TECH: LONG-TERM ANOMALY DETECTION</div>
+                
+                <div id="calendar" class="calendar-grid"></div>
+
+                <div id="interactionArea">
+                    <button class="action-btn" onclick="requestLocation()">Emergency Medical Bridge</button>
+                    <p style="font-size: 0.8rem; color: #7F8C8D; margin-top: 15px; text-align: center; font-family: 'Roboto Mono';">
+                        SYSTEM READY: 100%
+                    </p>
+                </div>
+            </div>
+
+            <div class="display-section" id="insightOutput"></div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <button id="alertBtn" class="active" onclick="renderView('low')">🆘 ALERT: FIONA</button>
+        <button id="reportBtn" onclick="reportAction()">🏆 CHAMPIONS: TEAM</button>
+    </div>
+
+    <script>
+        const hospitalData = [
+            {name: "Baptist Hospital", addr: "222 Waterloo Road, Kowloon Tong", tel: "+852 2339 8888"},
+            {name: "Kowloon Hospital", addr: "147A Argyle Street", tel: "+852 3129 7111"},
+            {name: "St. Teresa's Hospital", addr: "327 Prince Edward Road", tel: "+852 2339 9111"},
+            {name: "Queen Elizabeth Hospital", addr: "30 Gascoigne Road", tel: "+852 3506 8888"}
+        ];
+
+        function renderView(type) {
+            const cal = document.getElementById('calendar');
+            const out = document.getElementById('insightOutput');
+            const btnArea = document.getElementById('interactionArea');
+            const title = document.getElementById('pageTitle');
+            const statusBadge = document.getElementById('statusBadge');
+            const techTag = document.getElementById('techTag');
+            
+            document.getElementById('alertBtn').className = (type === 'low' ? 'active' : '');
+            document.getElementById('reportBtn').className = (type === 'high' ? 'active' : '');
+
+            cal.innerHTML = '';
+            for (let i = 1; i <= 30; i++) {
+                const div = document.createElement('div');
+                div.innerText = i;
+                div.className = (type === 'low' ? (i <= 27 ? 'day-cell mood-low' : 'day-cell day-empty') : 'day-cell mood-high');
+                cal.appendChild(div);
+            }
+
+            if (type === 'low') {
+                title.innerText = "Medical Alert";
+                title.style.color = "var(--alert-red)";
+                statusBadge.innerText = "CASE: FIONA";
+                statusBadge.className = "status-badge-large badge-style-fiona";
+                techTag.innerText = "TECH: LONG-TERM ANOMALY DETECTION";
+                btnArea.style.display = "block";
+                out.innerHTML = `<div style="margin: auto; text-align:center;"><p style="font-size: 1.1rem; color: #7F8C8D; line-height: 1.6;">Digital Oasis has detected persistent risk for:<br><b style="color:var(--alert-red); font-size:1.5rem;">FIONA</b><br><br><b>Status:</b> Immediate intervention recommended.</p></div>`;
+            } else {
+                title.innerText = "Team Excellence";
+                title.style.color = "var(--primary-green)";
+                statusBadge.innerText = "MASTERS: C, R, T";
+                statusBadge.className = "status-badge-large badge-style-masters";
+                techTag.innerText = "TECH: OPTIMAL STABILITY ACHIEVED";
+                btnArea.style.display = "none";
+                out.innerHTML = `
+                    <div style="text-align: center; width: 100%; margin: auto;">
+                        <p style="font-family: 'Roboto Mono'; font-size: 0.75rem; color: var(--accent-yellow); letter-spacing: 2px; margin-bottom: 20px;">OASIS CHAMPIONS</p>
+                        <div class="ranking-container">
+                            <div class="rank-item"><span class="rank-number">01</span><div class="hero-name">Cherry</div></div>
+                            <div class="rank-item"><span class="rank-number">02</span><div class="hero-name">Teresa</div></div>
+                            <div class="rank-item"><span class="rank-number">03</span><div class="hero-name">Rain</div></div>
+                        </div>
+                        <div style="height: 1px; background: #EEE; width: 50%; margin: 25px auto;"></div>
+                        <p style="font-size: 1.1rem; color: #7F8C8D;">Resilience Score: <b style="color: var(--primary-green); font-size: 1.6rem;">99</b><small>/100</small></p>
+                    </div>`;
+            }
+        }
+
+        function reportAction() {
+            renderView('high');
+        }
+
+        function requestLocation() {
+            if (confirm("Confirm: Bridge FIONA to professional medical resources?")) {
+                const out = document.getElementById('insightOutput');
+                out.innerHTML = `<p style="font-weight: 700; color: var(--alert-red); margin-bottom: 20px; font-family:'Roboto Mono';">> BRIDGE_ESTABLISHED: KOWLOON_TONG</p>`;
+                hospitalData.forEach(h => {
+                    out.innerHTML += `<div class="hospital-card"><div class="h-name">${h.name}</div><div class="h-info">📍 ${h.addr}</div><div class="h-info">📞 ${h.tel}</div></div>`;
+                });
+                out.scrollTop = 0;
+            }
+        }
+
+        renderView('low');
+    </script>
+</body>
+</html>
